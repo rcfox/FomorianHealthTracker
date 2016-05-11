@@ -1,0 +1,65 @@
+<html>
+    <head>
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+	<script type="text/javascript">
+	 function handleData(healthData) {
+	     var nodeNames = {};
+	     healthData.map(function(d) { return Object.keys(d.health); })
+		       .reduce(function(a, b) { // flatten the array of arrays of health
+			   return a.concat(b);
+		       }, [])
+		       .forEach(function(name) {
+			   nodeNames[name] = true;
+		       });
+	     var columns = Object.keys(nodeNames).sort();
+
+	     google.charts.load('current', {'packages':['corechart']});
+	     google.charts.setOnLoadCallback(drawChart);
+
+	     function drawChart() {
+		 var data = new google.visualization.DataTable();
+		 data.addColumn('datetime', 'Time');
+		 columns.forEach(function(name) {
+		     data.addColumn('number', name)
+		 });
+
+		 healthData.forEach(function(d) {
+		     var date = new Date(d.timestamp*1000);
+		     var row = [date];
+		     columns.forEach(function(c) {
+			 row.push(d.health[c]);
+		     });
+		     data.addRow(row);
+		 });
+
+		 var ticks = [new Date(healthData[0].timestamp * 1000),
+			      new Date(healthData[healthData.length-1].timestamp * 1000),];
+
+		 var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+		 var options = {
+		     title: 'Fomorian Health Tracker',
+		     interpolateNulls: true,
+		     pointSize: 5,
+		     vAxis:
+		     {
+			 viewWindow:
+			 {
+			     max: 1,
+			     min: 0
+			 }
+		     },
+		 };
+		 
+		 chart.draw(data, options);
+		 window.onresize = function() {
+		     chart.draw(data, options);
+		 };
+	     };
+	 };
+	</script>
+    </head>
+    <body>
+	<div id="curve_chart" style="height: 100%"></div>
+	<script type="" src="https://hook.io/rcfox/fomorian-health-jsonp?callback=handleData"></script>
+    </body>
+</html>
