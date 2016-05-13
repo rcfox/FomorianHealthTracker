@@ -1,8 +1,11 @@
 <html>
     <head>
 	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+	<script type="text/javascript" src="simple_statistics.min.js"></script>
 	<script type="text/javascript">
 	 function handleData(healthData) {
+	     document.getElementById('expiryTime').innerHTML = new Date(1463414400*1000).toString();
+
 	     google.charts.load('current', {'packages':['corechart']});
 
 	     var nodeNames = {};
@@ -25,6 +28,7 @@
 			 interpolateNulls: true,
 			 pointSize: 1,
 			 chartArea: {left: '10%', right: '20%'},
+			 explorer: {},
 			 vAxis:
 			 {
 			     viewWindow:
@@ -40,6 +44,7 @@
 		     var deltaChartOptions = {
 			 title: 'ΔHealth/ΔTime (x100)',
 			 interpolateNulls: true,
+			 explorer: {},
 			 pointSize: 1,
 			 chartArea: {left: '10%', right: '20%'},
 		     };
@@ -89,15 +94,36 @@
 		 data.addRow(row);
 	     });
 
+	     var points = {};
+	     healthData.forEach(function(d) {
+		 columns.forEach(function(c) {
+		     if (!points[c]) {
+			 points[c] = [];
+		     }
+		     points[c].push([d.timestamp, d.health[c] || null]);
+		 });
+	     });
+	     var projectionRows = [];
+	     columns.forEach(function(c) {
+		 var regression = ss.linearRegression(points[c]);
+		 var date = -regression.b/regression.m;
+		 var row = [new Date(1000*date)];
+		 columns.forEach(function(c2) {
+		     var regression2 = ss.linearRegression(points[c2]);
+		     row.push(Math.max(0, ss.linearRegressionLine(regression2)(date)+0.00001) || null);
+		 });
+		 projectionRows.push(row);
+	     });
+	     projectionRows.sort(function(a, b) { return a[0] - b[0]; });
+	     projectionRows.forEach(function(row) { data.addRow(row); });
 
 	     return data;
-
-	     chart.draw(data, options);
-
 	 };
 	</script>
     </head>
     <body>
+	<h1>Fomorian event expires at: <span id="expiryTime"></span></h1>
+	<div>Projected event completion times are shown on the health chart.</div>
 	<div>
 	    <div id="curve_chart" style="height: 100%; float: left; min-width: 49%"></div>
 	    <div id="delta_curve_chart" style="height: 100%; float: right; min-width: 49%"></div>
