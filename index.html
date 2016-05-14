@@ -103,6 +103,9 @@
 		     points[c].push([d.timestamp, d.health[c] || null]);
 		 });
 	     });
+	     columns.forEach(function(c) {
+		 points[c] = points[c].slice(0.5 * points[c].length);
+	     });
 	     var projectionRows = [];
 	     columns.forEach(function(c) {
 		 var regression = ss.linearRegression(points[c]);
