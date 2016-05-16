@@ -25,7 +25,8 @@
 			 interpolateNulls: true,
 			 pointSize: 1,
 			 chartArea: {left: '10%', right: '20%'},
-			 explorer: {},
+			 explorer: {keepInBounds: true, maxZoomOut: 1,
+				    actions: ['dragToZoom', 'rightClickToReset']},
 			 vAxis:
 			 {
 			     viewWindow:
@@ -41,7 +42,8 @@
 		     var deltaChartOptions = {
 			 title: 'ΔHealth/ΔTime (x100)',
 			 interpolateNulls: true,
-			 explorer: {},
+			 explorer: {keepInBounds: true, maxZoomOut: 1,
+				    actions: ['dragToZoom', 'rightClickToReset']},
 			 pointSize: 1,
 			 chartArea: {left: '10%', right: '20%'},
 		     };
@@ -104,6 +106,7 @@
 	</script>
     </head>
     <body>
+	<div>To zoom, click and drag to make a box around the data to zoom to. Right-click to reset the zoom.</div>
 	<div>
 	    <div id="curve_chart" style="height: 100%; float: left; min-width: 49%"></div>
 	    <div id="delta_curve_chart" style="height: 100%; float: right; min-width: 49%"></div>
