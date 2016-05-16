@@ -69,7 +69,7 @@
 		 var row = [date];
 		 var dt = (d2.timestamp - d1.timestamp);
 		 columns.forEach(function(c) {
-		     if (d2.health[c] && d1.health[c]) {
+		     if (d2.health[c] !== undefined) {
 			 row.push(100000*(d2.health[c] - d1.health[c])/dt);
 		     } else {
 			 row.push(null);
@@ -112,6 +112,6 @@
 	    <div id="delta_curve_chart" style="height: 100%; float: right; min-width: 49%"></div>
 	    <div style="clear:both">Note: Due to a database issue, some of the data was missed. Sorry about that!</div>
 	</div>
-	<script type="" src="https://hook.io/rcfox/fomorian-health-jsonp?callback=handleData"></script>
+	<script src="health.jsonp"></script>
     </body>
 </html>
